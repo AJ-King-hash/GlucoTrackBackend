@@ -170,3 +170,21 @@ class UserReminderUpdate(BaseModel):
 
 class FCMTokenUpdate(BaseModel):
     fcm_token: str
+
+
+class ShowUserToken(BaseModel):
+    id:int
+    name:str
+    email:str
+   
+    # otps:List[Otp]=[]
+    class Config():
+        from_attributes=True
+        
+
+class ShowUserWithMessageToken(BaseModel):
+    message:str
+    user:ShowUserToken
+    token:Token
+    class Config():
+        from_attributes=True
