@@ -27,10 +27,10 @@ def create(request,db:Session):
 
     return {"message":"Risk Factors added successfully!","risk_factors":new_risks}
 
-def update(id:int,request,db:Session):
-    risks=db.query(models.RiskFactor).filter(models.RiskFactor.id==id).first()
+def update(user_id:int,request,db:Session):
+    risks=db.query(models.RiskFactor).filter(models.RiskFactor.user_id==user_id).first()
     if not risks:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"risk Factors with the id {id} is not available")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"risk Factors with the user id {user_id} is not available")
     risks.age=request.age
     risks.weight=float(request.weight)
     risks.height=float(request.height)
@@ -46,15 +46,15 @@ def update(id:int,request,db:Session):
     db.refresh(risks)
     return risks
 
-def show(id:int,db:Session):
-    risks=db.query(models.RiskFactor).filter(models.RiskFactor.id==id).first()
+def show(user_id:int,db:Session):
+    risks=db.query(models.RiskFactor).filter(models.RiskFactor.user_id==user_id).first()
     if not risks:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Risk Factors with the id {id} is not available")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Risk Factors with the id {user_id} is not available")
     return risks
 
-def delete(id:int,db:Session):
-    risks=db.query(models.RiskFactor).filter(models.RiskFactor.id==id).first()
+def delete(user_id:int,db:Session):
+    risks=db.query(models.RiskFactor).filter(models.RiskFactor.user_id==user_id).first()
     if not risks:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Risk Factors with the id {id} is not available")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Risk Factors with the user id {user_id} is not available")
     db.delete(risks)
     db.commit() 

@@ -51,6 +51,14 @@ class MealBase(BaseModel):
     meal_time:datetime
     user_id:int
     
+class MealAll(MealBase):
+    id:int
+    user_id:int
+    title:str
+    created_at:datetime
+    updated_at:datetime | None
+    class Config():
+        from_attributes=True
 
 class AnalyseShow(AnalyseBase):
     id:int
@@ -111,6 +119,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
+    id:int | None=None
     email: str | None = None
 
 

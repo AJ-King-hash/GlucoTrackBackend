@@ -10,6 +10,8 @@ import models
 import json
 from firebase_admin import credentials, messaging
 from schemas import FCMTokenUpdate,UserReminderUpdate
+import schemas
+import oauth2
 router=APIRouter(
     prefix="/notification",
     tags=["Notifications"]
@@ -78,23 +80,24 @@ async def trigger():
 @router.on_event("startup")
 async def startup():
     scheduler.add_job(send_reminders, IntervalTrigger(minutes=1))  # Check every minute
-    scheduler.start()
+    if not scheduler.running:
+        scheduler.start()
 
 @router.on_event("shutdown")
 async def shutdown():
     scheduler.shutdown()
 
 
-@router.put("/{user_id}/reminders")
-def set_reminders(user_id: int, reminder: UserReminderUpdate, db: Session = Depends(get_db)):
-    updated_user = NotificationRepo.update_reminders(db, user_id, reminder.gluco_time, reminder.medicine_time, reminder.timezone)
+@router.put("/reminders")
+def set_reminders( reminder: UserReminderUpdate, db: Session = Depends(get_db),current_user:schemas.User=Depends(oauth2.get_current_user)):
+    updated_user = NotificationRepo.update_reminders(db, current_user.id, reminder.gluco_time, reminder.medicine_time, reminder.timezone)
     if not updated_user:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "Reminders updated"}
 
-@router.post("/{user_id}/fcm-token")
-def set_fcm_token(user_id: int, token: FCMTokenUpdate, db: Session = Depends(get_db)):
-    updated_user = NotificationRepo.update_fcm_token(db, user_id, token.fcm_token)
+@router.post("/fcm-token")
+def set_fcm_token(token: FCMTokenUpdate, db: Session = Depends(get_db),current_user:schemas.User=Depends(oauth2.get_current_user)):
+    updated_user = NotificationRepo.update_fcm_token(db, current_user.id, token.fcm_token)
     if not updated_user:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "FCM token updated"}

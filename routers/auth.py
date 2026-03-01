@@ -10,7 +10,7 @@ router=APIRouter(
     tags=["Authentication"]
 )
 
-@router.post("/login",response_model=schemas.Token)
+@router.post("/login",response_model=schemas.ShowUserWithMessageToken)
 def login(request:OAuth2PasswordRequestForm=Depends(),db:Session=Depends(get_db)):
     # 1-check the user
     user=db.query(models.User).filter(models.User.email==request.username).first()
@@ -22,10 +22,10 @@ def login(request:OAuth2PasswordRequestForm=Depends(),db:Session=Depends(get_db)
     #2- Generate JWT token and return it     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
+        data={"sub": user.email,"id":user.id}, expires_delta=access_token_expires
     )
     # return user
-    return schemas.Token(access_token=access_token, token_type="bearer")
+    return {"message":"User Login Successfully!","user":user,"token":schemas.Token(access_token=access_token, token_type="bearer")}
 
 
 

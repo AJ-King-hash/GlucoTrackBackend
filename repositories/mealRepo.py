@@ -6,6 +6,12 @@ from datetime import datetime,timezone
 from GlucoBot import GlucoBot
 import pandas as pd
 gluco_bot=GlucoBot()
+
+def get_all(user_id:int,db:Session):
+    meals=db.query(models.Meal).where(models.Meal.user_id==user_id).all()
+    return meals
+
+
 def get_all(user_id:int,db:Session):
     meals=db.query(models.Meal).where(models.Meal.user_id==user_id).all()
     return meals

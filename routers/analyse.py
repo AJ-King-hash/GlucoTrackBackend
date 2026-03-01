@@ -3,6 +3,7 @@ import schemas
 from sqlalchemy.orm import Session
 from database import get_db
 import models
+import oauth2
 from typing import List
 from repositories import AnalyseRepo
 # has diabete:
@@ -32,9 +33,9 @@ router=APIRouter(
 )
 
 
-@router.get("/all/{id}",response_model=List[schemas.AnalyseShow])
-def get_all_analysis(user_id:int,db:Session=Depends(get_db)):
-    return AnalyseRepo.get_all(user_id,db)
+@router.get("/all/",response_model=List[schemas.AnalyseShow])
+def get_all_analysis(db:Session=Depends(get_db),current_user:schemas.User=Depends(oauth2.get_current_user)):
+    return AnalyseRepo.get_all(current_user.id,db)
 
 
 @router.delete("/{id}")

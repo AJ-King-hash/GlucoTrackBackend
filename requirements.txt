@@ -28,6 +28,8 @@ apscheduler
 
 pytz
 
+hashing
+
 psycopg2-binary
 
 python-dotenv
