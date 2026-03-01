@@ -1,9 +1,11 @@
 from StartingPackages import *
 from fastapi import APIRouter
-from JwtToken import timedelta,ACCESS_TOKEN_EXPIRE_MINUTES,create_access_token
+from JwtToken import timedelta,ACCESS_TOKEN_EXPIRE_MINUTES,create_access_token,DeleteToken
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status,exceptions
 from repositories.authRepo import *
+
+import oauth2
 
 router=APIRouter(
     prefix="/auth",
@@ -27,5 +29,15 @@ def login(request:OAuth2PasswordRequestForm=Depends(),db:Session=Depends(get_db)
     # return user
     return {"message":"User Login Successfully!","user":user,"token":schemas.Token(access_token=access_token, token_type="bearer")}
 
+@router.delete("/logout",response_model=schemas.ShowMessage)
+def logout(current_token:schemas.User=Depends(oauth2.get_current_token)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Not Authorized",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    DeleteToken(current_token,credentials_exception) 
+    return {"message":"User Logout Successfully!"}
+      
 
 

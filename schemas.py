@@ -197,3 +197,6 @@ class ShowUserWithMessageToken(BaseModel):
     token:Token
     class Config():
         from_attributes=True
+
+class ShowMessage(BaseModel):
+    message:str
